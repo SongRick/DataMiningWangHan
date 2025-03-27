@@ -18,46 +18,55 @@ def struct_data_sampling(num, **kwargs):
         for key, value in kwargs.items():
             # int类型 给定范围内随机生成
             if key == "int":
-                it = iter(value['datarange'])
+                it = iter(value['data_range'])
                 tmp = random.randint(next(it), next(it))
-            # float类型 给定范围内随机生成，保留小数点后2位
+            # float类型 给定范围内随机生成，指定保留小数点位数
             elif key == "float":
-                it = iter(value['datarange'])
-                tmp = round(random.uniform(next(it), next(it)),2)
+                it = iter(value['data_range'])
+                decimal_places = value.get('decimal_places')
+                tmp = round(random.uniform(next(it), next(it)),decimal_places)
             # string类型 给定范围内随机生成指定数目的字符
             elif key == "str":
-                tmp = ''.join(random.SystemRandom().choice(value['datarange']) for _ in range(value['len']))
+                len=range(value['len'])
+                tmp = ''.join(random.SystemRandom().choice(value['data_range']) for _ in len)
             # 自定义类型 递归处理
             else:
                 tmp=struct_data_sampling(1, **value)
             element.append(tmp)
         result.append(element)
     return result
-def apply():
+def entry():
     """
-    自定义了一个数据结构:
-    学校
-        学校编号(int)
-        班级
-            班级编号(int)
-            学生
-                学生学号(int)
-                姓名(str)
+    自定义数据结构:
+    参赛作品
+        作品编号(int)
+        作品得分(float)
+        参赛学生
+            学生姓名(str)
+            学号(int)
+            指导教师
+                教师姓名(str)
+                联系方式
+                    电话(int)
+                    地址(str)
     """
-    school={
-        "int":{"datarange": (0, 10)},
-        "class":{
-            "int":{"datarange":(11,20)},
-            "student":{
-                "int": {"datarange": (2024001, 2024100)},
-                "str":{
-                    "datarange": string.ascii_uppercase,
-                    "len": 5
+    entry={
+        "int":{"data_range":(1,10)},
+        "float":{"data_range":(0,100),"decimal_places":2},
+        "student_participant":{
+            "str": {"data_range": string.ascii_uppercase,"len": 2},
+            "int": {"data_range": (2024001, 2024999)},
+            "advisor":{
+                "str": {"data_range": string.ascii_uppercase, "len": 3},
+                "contact_information":{
+                    "int":{"data_range":(1000000,9999999)},
+                    "str": {"data_range": string.ascii_lowercase,"len": 15}
                 }
             }
         }
     }
-    result = struct_data_sampling(2, **school)
-    print(result)
+    result = struct_data_sampling(5, **entry)
+    for element in result:
+        print(element)
 if __name__ == "__main__":
-    apply()
+    entry()
